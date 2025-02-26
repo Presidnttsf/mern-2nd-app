@@ -1,105 +1,116 @@
-import React, { useEffect, useRef, useState} from 'react';
-import Modal from "../tsf-components/Modal"
+import React, { useEffect, useRef, useState } from 'react';
+import Modal from "../tsf-components/Modal"; // Importing the Modal component
 
 function Notes() {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [notes, setNotes] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-const [modalMessage, setModalMessage] = useState('');
+  // State variables to store note details, list of notes, and other UI states
+  const [title, setTitle] = useState(''); // Stores the title of the note
+  const [description, setDescription] = useState(''); // Stores the description of the note
+  const [notes, setNotes] = useState([]); // Stores all notes as an array
+  const [editIndex, setEditIndex] = useState(null); // Tracks index of the note being edited
+  const [showModal, setShowModal] = useState(false); // Controls visibility of the modal
+  const [confirmAction, setConfirmAction] = useState(null); // Stores the action to confirm in the modal
+  const [modalMessage, setModalMessage] = useState(''); // Stores the message to be displayed in the modal
 
-   const inputRef = useRef(null);
+  const inputRef = useRef(null); // Reference for focusing the title input field
 
-useEffect(() => {
-  const notesData = JSON.parse(localStorage.getItem('notes')) || [];
-    setNotes(notesData);
-  inputRef.current.focus();
-}, []);
+  // Load saved notes from localStorage when the component mounts
+  useEffect(() => {
+    const notesData = JSON.parse(localStorage.getItem('notes')) || []; // Retrieve notes from localStorage
+    setNotes(notesData); // Set retrieved notes in state
+    inputRef.current.focus(); // Automatically focus on the title input field
+  }, []);
 
-// addNote function
+  // Function to add a new note
   function addNote() {
-    // Ensure title and description are provided
     if (!title || !description) {
-      showAlert('Please enter title and description!');
+      showAlert('Please enter title and description!'); // Ensure both fields are filled
       return;
     }
     
-    
-    // Create a new note and update the state
-    const newNotes = [{ title, description }, ...notes];
-    setNotes(newNotes);
-    
-    // Save the updated notes list to localStorage
-    localStorage.setItem('notes', JSON.stringify(newNotes));
+    const newNotes = [{ title, description }, ...notes]; // Create a new note and add it to the list
+    setNotes(newNotes); // Update state with new note
+    localStorage.setItem('notes', JSON.stringify(newNotes)); // Save notes to localStorage
+    resetForm(); // Clear input fields
+    showAlert('Note added successfully!'); // Show success message
+  }
 
-    // Clear input fields and refocus on the input
-    resetForm();
-    showAlert('Note added  successfully!');
-}
+  // Function to update an existing note
+  function updateNote() {
+    if (!title || !description) {
+      alert('Please enter title and description!'); // Ensure fields are not empty
+      return;
+    }
+    if (editIndex === null) return; // Prevent updating if no note is selected
 
-// function to update selected notes
-function updateNote() {
-  // Ensure title and description are provided
-  if (!title || !description) return alert('Please enter title and description!');
-  if (editIndex === null) return; // Prevent updating if no note is selected
+    const updatedNotes = notes.map((note, index) => 
+      index === editIndex ? { title, description } : note // Replace the note at editIndex
+    );
+    setNotes(updatedNotes); // Update state
+    localStorage.setItem('notes', JSON.stringify(updatedNotes)); // Save changes to localStorage
+    setEditIndex(null); // Reset edit mode
+    resetForm(); // Clear input fields
+    showAlert('Note has been updated!'); // Show success message
+  }
 
-  // Update the specific note in the list
-  const updatedNotes = notes.map((note, index) =>
-      index === editIndex ? { title, description } : note
-  );
+  // Function to clear input fields and refocus the title input
+  function resetForm() {
+    setTitle('');
+    setDescription('');
+    inputRef.current.focus();
+  }
 
-  // Update state and localStorage
-  setNotes(updatedNotes);
-  localStorage.setItem('notes', JSON.stringify(updatedNotes));
-
-  // Reset editIndex and input fields
-  setEditIndex(null);
-  resetForm();
-  showAlert('Note has been updated!');
-}
-
-// Function to clear the input fields and refocus the input
-function resetForm() {
-  setTitle('');
-  setDescription('');
-  inputRef.current.focus();
-}
-
-  //  Added delete function
+  // Function to delete all notes
   function deleteNotes() {
-    setNotes([]); // Clears all notes
-    
-    resetForm(); // Clears input fields
-    showAlert('Notes deleted successfully!');
+    setNotes([]); // Clear notes list
+    localStorage.removeItem('notes'); // Remove from localStorage
+    resetForm(); // Clear input fields
+    showAlert('Notes deleted successfully!'); // Show success message
+    setConfirmAction(null); // Reset confirmation action
   }
 
-  function deleteById(id){
-    showAlert(`Deleting note ${id+1}`);
-    const updatedNotes = notes.filter((note, index) => index !== id); // Filter out the note to delete
-    setNotes(updatedNotes); // Update the state
-    localStorage.setItem('notes', JSON.stringify(updatedNotes)); // Update localStorage
-    showAlert('Note deleted successfully!');
+  // Function to delete a specific note by its index
+  function deleteById(id) {
+    showAlert(`Deleting note ${id + 1}`);
+    const updatedNotes = notes.filter((_, index) => index !== id); // Remove selected note
+    setNotes(updatedNotes); // Update state
+    localStorage.setItem('notes', JSON.stringify(updatedNotes)); // Save changes to localStorage
+    showAlert('Note deleted successfully!'); // Show success message
+    setConfirmAction(null); // Reset confirmation action
   }
 
-function editById(id){
-  if (!notes[id]) return; // Prevent errors if index is invalid
-setTitle(notes[id].title);
-setDescription(notes[id].description);
-setEditIndex(id);
-inputRef.current.focus();
+  // Function to edit a specific note by its index
+  function editById(id) {
+    if (!notes[id]) return; // Prevent errors if index is invalid
+    setTitle(notes[id].title); // Set selected note's title
+    setDescription(notes[id].description); // Set selected note's description
+    setEditIndex(id); // Store index of the note being edited
+    inputRef.current.focus(); // Refocus input field
+  }
 
-}
+  // Function to display an alert message in a modal
+  function showAlert(message) {
+    setModalMessage(message);
+    setShowModal(true);
+  }
 
-function showAlert(message) {
-  setModalMessage(message);
-  setShowModal(true);
-}
+  // Function to confirm deletion of all notes
+  function confirmDeleteAll() {
+    setModalMessage("Are you sure you want to delete all notes?");
+    setConfirmAction(() => deleteNotes); // Set delete action
+    setShowModal(true);
+  }
+
+  // Function to confirm deletion of a specific note
+  function confirmDeleteById(id) {
+    setModalMessage(`Are you sure you want to delete note ${id + 1}?`);
+    setConfirmAction(() => () => deleteById(id)); // Set delete action
+    setShowModal(true);
+  }
+
   return (
     <>
       <h1>Notes</h1>
-      
-      <Modal show={showModal} handleClose={() => setShowModal(false)} title="Notification" modalMessage={modalMessage} />
+      <Modal show={showModal} handleClose={() => setShowModal(false)} title="Notification" modalMessage={modalMessage} confirmAction={confirmAction}/>
       <div style={styles.container}>
         <input
           style={{ ...styles.inputF, width: '25%' }}
@@ -116,29 +127,23 @@ function showAlert(message) {
           placeholder="Write notes here"
         />
 
-      {/* Add & Delete Buttons Functional */}
-      <div style={styles.buttonContainer}>
-        <button style={styles.button} onClick={editIndex === null ? addNote : updateNote}>{editIndex !== null ?"Update":"Add"}</button>
-        <button style={styles.button} onClick={deleteNotes}>Clear All</button>
+        <div style={styles.buttonContainer}>
+          <button style={styles.button} onClick={editIndex === null ? addNote : updateNote}>{editIndex !== null ? "Update" : "Add"}</button>
+          <button style={styles.button} onClick={confirmDeleteAll}>Clear All</button>
+        </div>
       </div>
 
-      </div>
-
-
-      {/*  Display Notes  */}
       <div style={styles.noteContainer}>
         {notes.map((note, index) => (
           <div key={index} style={styles.noteCard}>
-            <span style={styles.actionBtn} onClick={()=>deleteById(index)}>
-                <img src='https://cdn-icons-png.flaticon.com/128/14044/14044168.png' alt='delete icon' height={"20px"}/>
+            <span style={styles.actionBtn} onClick={() => confirmDeleteById(index)}>
+              <img src='https://cdn-icons-png.flaticon.com/128/14044/14044168.png' alt='delete icon' height="20px"/>
             </span>
-            <span style={styles.actionBtn} onClick={()=>editById(index)}>
-                <img src='https://cdn-icons-png.flaticon.com/128/14204/14204341.png' alt='delete icon' height={"20px"}/>
+            <span style={styles.actionBtn} onClick={() => editById(index)}>
+              <img src='https://cdn-icons-png.flaticon.com/128/14204/14204341.png' alt='edit icon' height="20px"/>
             </span>
-
-            <div style={styles.tittleContainer}><strong>{index+1}: {note.title}</strong></div> 
+            <div style={styles.tittleContainer}><strong>{index + 1}: {note.title}</strong></div>
             <p>{note.description}</p>
-            
           </div>
         ))}
       </div>
@@ -147,6 +152,7 @@ function showAlert(message) {
 }
 
 export default Notes;
+
 
 
 // Styles for note component
