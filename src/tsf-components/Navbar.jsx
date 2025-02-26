@@ -4,6 +4,8 @@ import "./Navbar.css";
 const Navbar = ({dark, searchTerm, setSearchTerm, toggleDarkMode }) => {
   
 
+  
+
   return (
     <nav className="nav">
       <div className="left-nav">

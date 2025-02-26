@@ -43,10 +43,10 @@ function App() {
       <Navbar dark={dark} toggleDarkMode={toggleDarkMode} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       
       
-      <Notes />
+      <Notes searchTerm={searchTerm}/>
 {/* <Pagination/> */}
       {/* <StudentNotes/> */}
-      {/* <NoteHookForm></NoteHookForm> */}
+      <NoteHookForm></NoteHookForm>
       {/* <HomeoPatient/> */}
       {/* <ToDoApp/> */}
     </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Modal from "../tsf-components/Modal"; // Importing the Modal component
 
-function Notes() {
+function Notes({searchTerm}) {
   // State variables to store note details, list of notes, and other UI states
   const [title, setTitle] = useState(''); // Stores the title of the note
   const [description, setDescription] = useState(''); // Stores the description of the note
@@ -107,6 +107,14 @@ function Notes() {
     setShowModal(true);
   }
 
+  // Filter notes based on search term
+  const filteredNotes = notes.filter(
+    (note) =>
+      note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      note.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
   return (
     <>
       <h1>Notes</h1>
@@ -134,7 +142,7 @@ function Notes() {
       </div>
 
       <div style={styles.noteContainer}>
-        {notes.map((note, index) => (
+        {filteredNotes.length > 0 ?filteredNotes.map((note, index) => (
           <div key={index} style={styles.noteCard}>
             <span style={styles.actionBtn} onClick={() => confirmDeleteById(index)}>
               <img src='https://cdn-icons-png.flaticon.com/128/14044/14044168.png' alt='delete icon' height="20px"/>
@@ -145,7 +153,7 @@ function Notes() {
             <div style={styles.tittleContainer}><strong>{index + 1}: {note.title}</strong></div>
             <p>{note.description}</p>
           </div>
-        ))}
+        )): <h3>No notes found!</h3>}
       </div>
     </>
   );
