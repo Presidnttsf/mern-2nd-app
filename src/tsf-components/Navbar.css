@@ -1,0 +1,39 @@
+  
+  /* Navbar Styling */
+  .nav {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000; /* Ensures it stays above other elements */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #d6e41a;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+  }
+  
+  .nav-search {
+    width: 45%;
+    border: 1px solid black;
+    border-radius: 50px;
+    padding: 5px 10px;
+    text-align: left;  /* Ensure text starts from the left */
+    direction: ltr;    /* Ensure left-to-right text flow */
+    color: black;
+  }
+  
+  .right-nav span{
+        margin: 5px;
+
+  }
+
+  .darkBtn{
+    background-color: blue;
+    border-radius: 15px;
+    font-size: 17px;
+  }
+
+
+  
