@@ -62,7 +62,7 @@ function Notes({searchTerm}) {
   // Function to delete all notes
   function deleteNotes() {
     setNotes([]); // Clear notes list
-    localStorage.removeItem('notes'); // Remove from localStorage
+    // localStorage.removeItem('notes'); // Remove from localStorage
     resetForm(); // Clear input fields
     showAlert('Notes deleted successfully!'); // Show success message
     setConfirmAction(null); // Reset confirmation action
@@ -113,12 +113,17 @@ function Notes({searchTerm}) {
       note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       note.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  function handleClose(){
+
+    setShowModal(false)
+setConfirmAction(null)
+  }
 
 
   return (
     <>
       <h1>Notes</h1>
-      <Modal show={showModal} handleClose={() => setShowModal(false)} title="Notification" modalMessage={modalMessage} confirmAction={confirmAction}/>
+      <Modal show={showModal} handleClose={handleClose} title="Notification" modalMessage={modalMessage} confirmAction={confirmAction}/>
       <div style={styles.container}>
         <input
           style={{ ...styles.inputF, width: '25%' }}
