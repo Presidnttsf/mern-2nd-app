@@ -8,6 +8,7 @@ import StudentNotes from './components/StudentNotes';
 import NoteHookForm from './tsf-components/NoteHookForm';
 import HomeoPatient from './tsf-components/mini-projects/HomeoPatient';
 import ToDoApp from './tsf-components/ToDoApp';
+import Bulb from './tsf-components/mini-projects/Bulb';
 
 
 function App() {
@@ -43,12 +44,13 @@ function App() {
       <Navbar dark={dark} toggleDarkMode={toggleDarkMode} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       
       
-      <Notes searchTerm={searchTerm}/>
+      {/* <Notes searchTerm={searchTerm}/> */}
 {/* <Pagination/> */}
       {/* <StudentNotes/> */}
-      <NoteHookForm></NoteHookForm>
+      {/* <NoteHookForm></NoteHookForm> */}
       {/* <HomeoPatient/> */}
       {/* <ToDoApp/> */}
+      <Bulb/>
     </div>
   );
 }
